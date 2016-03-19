@@ -18,7 +18,7 @@ define('QB_PATH_AUTH', "auth.json");
 define('QB_PATH_LOGIN', "login.json");
 define('QB_PATH_EVENTS', "events.json");
 
-define('QB_DEFAULT_PASSWORD', "Zhengnami13");
+define('QB_DEFAULT_PASSWORD', "Nithiya2405");
 
 
 class Qbconfig {
