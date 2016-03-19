@@ -50,7 +50,10 @@ class Api_User extends Api_Unit {
     Sign up...
   _________________________________________________________________________________________________________*/
     public function api_entry_signup() {
-        parent::validateParams(array("username", "email", "fullname", "password", "bday", "sex"));
+        $arrFields = array("username", "email", "fullname", "password", "bday", "sex", "preferred_language", "mobile_number", "landline_number");
+        parent::validateParams($arrFields);
+
+
 
         $qbToken = $this->qbhelper->generateSession();
 
@@ -62,25 +65,20 @@ class Api_User extends Api_Unit {
           $_POST['email'],
           QB_DEFAULT_PASSWORD
         );
-        /*
 
-        */
+        
         if ($qbSession == null)
           parent::returnWithErr($this->qbhelper->latestErr);
 
-        $newUser = $this->Mdl_Users->signup(
-          $_POST['username'],
-          $_POST['email'],
-          md5($_POST['password']),
-          $_POST['fullname'],
-          $_POST['bday'],
-          $_POST['sex'],
-          $qbSession
-        );
+        $arg = $this->safeArray($arrFields, $_POST);
+
+        $newUser = $this->Mdl_Users->signup($arg, $qbSession);
 
         if ($newUser == null) {
-          parent::returnWithErr($this->qbhelper->latestErr);
+          parent::returnWithErr($this->Mdl_Users->latestErr);
         }
+
+        
 
         $newUser['token'] = $hash = hash('tiger192,3', $newUser['username'] . date("y-d-m-h-m-s"));
         $baseurl = $this->config->base_url();
@@ -91,9 +89,7 @@ class Api_User extends Api_Unit {
           "user" =>  $newUser['id']
           ));
         
-        $email = mh_loadVerificationEmailTemplate($this, $newUser);
-                  
-                  
+        $email = mh_loadVerificationEmailTemplate($this, $newUser);     
                   
         mh_send([$newUser["username"]], "Please verify your account.", $email);
         //mh_send(["wangyinxing19@gmail.com"], "Please verify your account.", $email);
@@ -117,7 +113,7 @@ class Api_User extends Api_Unit {
 
     $user = $users[0];
 
-    if (!$user->verified)                               parent::returnWithErr("This account is not verified yet.");
+    //if (!$user->verified)                               parent::returnWithErr("This account is not verified yet.");
     if ($user->suspended)                               parent::returnWithErr("This account is under suspension.");
     if ($user->password != md5($_POST["password"]))     parent::returnWithErr("Invalid password.");
 
@@ -579,31 +575,6 @@ class Api_User extends Api_Unit {
       parent::returnWithErr("User id is not valid.");
 
     unset($user->password);
-
-    $this->load->model('Mdl_Requests');
-    $this->load->model('Mdl_Prays');
-
-    $user->ipray_praying_for_me = 0;
-    $user->ipray_i_am_praying_for = 0;
-    $user->ipray_request_attended = 0;
-
-    $prays = $this->Mdl_Prays->getAll();
-    $requests = array();
-
-    if (count($prays)) {
-      foreach ($prays as $key => $val) {
-        $request = $this->Mdl_Requests->get($val->request);
-        $prayer = $this->Mdl_Users->get($val->prayer);
-
-        if ($_POST["user"] == $request->host) {
-          if ($val->status == 1)  $user->ipray_request_attended++;
-          $user->ipray_praying_for_me++;
-        }
-        if ($_POST["user"] == $val->prayer) {
-          $user->ipray_i_am_praying_for++;
-        }
-      }
-    }
     
 
     parent::returnWithoutErr("User profile fetched successfully.", $user);
@@ -613,6 +584,8 @@ class Api_User extends Api_Unit {
     Set profile ..
   _________________________________________________________________________________________________________*/
   public function api_entry_setprofile() {
+    $arrFields = array("username", "email", "fullname", "password", "bday", "sex", "preferred_language", "mobile_number", "landline_number");
+
     parent::validateParams(array('user'));
 
     $user = $this->Mdl_Users->get($_POST["user"]);
@@ -620,7 +593,7 @@ class Api_User extends Api_Unit {
     if ($user == null)
       parent::returnWithErr("User id is not valid.");
 
-    $arg = $this->safeArray(array('fullname', 'avatar', 'church', 'city', 'province', 'bday', 'mood'), $_POST);
+    $arg = $this->safeArray($arrFields, $_POST);
 
     $arg['id'] = $_POST["user"];
 
@@ -651,25 +624,25 @@ class Api_User extends Api_Unit {
     unset($sender->password);
     unset($receiver->password);
 
-    if    ($_POST['subject'] == "ipray_sendinvitation") {
+    if    ($_POST['subject'] == "sendinvitation") {
       $msg = $sender->username . " has invited you.";
     }
-    else if ($_POST['subject'] == "ipray_acceptinvitation") {
+    else if ($_POST['subject'] == "acceptinvitation") {
       $msg = $sender->username . " has accepted your invitation.";
 
       // sender ---> receiver 
       $this->Mdl_Users->makeFriends($_POST["sender"], $_POST["receiver"]);
     }
-    else if ($_POST['subject'] == "ipray_rejectinvitation") {
+    else if ($_POST['subject'] == "rejectinvitation") {
       $msg = $sender->username . " has rejected your invitation.";
     }
-    else if ($_POST['subject'] == 'ipray_sendprayrequest') {
+    else if ($_POST['subject'] == 'sendprayrequest') {
       parent::validateParams(array('request'));
     }
-    else if ($_POST['subject'] == 'ipray_acceptprayrequest') {
+    else if ($_POST['subject'] == 'acceptprayrequest') {
       parent::validateParams(array('request'));
     }
-    else if ($_POST['subject'] == 'ipray_rejectprayrequest') {
+    else if ($_POST['subject'] == 'rejectprayrequest') {
       parent::validateParams(array('request'));
     }
     else {
