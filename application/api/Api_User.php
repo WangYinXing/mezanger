@@ -14,6 +14,8 @@ class Api_User extends Api_Unit {
     $this->load->helper("email");
     $this->load->helper("utility");
     $this->load->helper("user");
+
+    date_default_timezone_set('America/Los_Angeles');
   }
 
 
@@ -78,6 +80,7 @@ class Api_User extends Api_Unit {
           parent::returnWithErr($this->Mdl_Users->latestErr);
         }
 
+        
         
 
         $newUser['token'] = $hash = hash('tiger192,3', $newUser['username'] . date("y-d-m-h-m-s"));
