@@ -693,7 +693,7 @@ class Api_User extends Api_Unit {
       'alert' => $msg,
       'sender' => $sender,
       'receiver' => $receiver,
-      'id' => $noti->id
+      'id' => $noti['id']
       );
 
     
