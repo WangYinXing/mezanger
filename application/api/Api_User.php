@@ -31,7 +31,7 @@ class Api_User extends Api_Unit {
 
       if ($_POST['page'] <= 0) 
         parent::returnWithErr("Page number should be larger than 0.");
-      if ($_POST["qtype"] != "username" && $_POST["qtype"] != "email")
+      if ($_POST["qtype"] != "" && $_POST["qtype"] != "username" && $_POST["qtype"] != "email")
         parent::returnWithErr("Unknown qtype. it should be email or username.");
       
         $data = $this->Mdl_Users->get_list(
