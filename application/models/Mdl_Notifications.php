@@ -17,33 +17,19 @@ Class Mdl_Notifications extends Mdl_Campus {
 
 
 	public function create($arg) {
-
 		$this->db->insert($this->table, $arg);
+		$id = $this->db->insert_id();
 
-		$request = $this->db->insert_id();
-
-
-
-		if ($request == 0) {
-
+		if ($id == 0) {
 			$this->latestErr = "Failed to create excute sql with : " . json_encode($arg);
-
 		}
-
 		else {
-
 			$this->latestErr = "";
-
 		}
 
-
-
-		$arg['id'] = $request;
-
-
+		$arg['id'] = $id;
 
 		return $arg;
-
 	}
 
 

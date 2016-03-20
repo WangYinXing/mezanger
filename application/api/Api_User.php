@@ -677,23 +677,29 @@ class Api_User extends Api_Unit {
     if (!isset($receiver->devicetoken) || $receiver->devicetoken == "")
       parent::returnWithErr("User is not available at this moment. Please try again later.");
 
-    $payload = array(
-      'sound' => "default",
-      'subject' => $_POST['subject'],
-      'alert' => $msg,
-      'sender' => $sender,
-      'receiver' => $receiver
-      );
-
-    if (($failedCnt = $this->qbhelper->sendPN($receiver->devicetoken, json_encode($payload))) == 0) {
-      $this->load->model('Mdl_Notifications');
-      $this->Mdl_Notifications->create(array(
+    // Create notification record and get id for sending pushnotification.
+    $this->load->model('Mdl_Notifications');
+    $noti = $this->Mdl_Notifications->create(array(
         'subject' => $_POST['subject'],
         'message' => $msg,
         'sender' => $sender->id,
         'receiver' => $receiver->id
         ));
 
+
+    $payload = array(
+      'sound' => "default",
+      'subject' => $_POST['subject'],
+      'alert' => $msg,
+      'sender' => $sender,
+      'receiver' => $receiver,
+      'id' => $noti->id
+      );
+
+    
+
+
+    if (($failedCnt = $this->qbhelper->sendPN($receiver->devicetoken, json_encode($payload))) == 0) {
       parent::returnWithoutErr("Contact request has been sent successfully.");
     }
     else {
