@@ -151,7 +151,7 @@ Class Mdl_Users extends Mdl_Campus {
 			return;
 		}
 
-		$ret = $this->addToStrArray($b, $userA['friends']);
+		$ret = $this->addToStrArray($b, $userA->friends);
 
 		if (!$ret['succeed']) {
 			$this->latestErr = "This user added already.";
@@ -171,7 +171,7 @@ Class Mdl_Users extends Mdl_Campus {
 			return;
 		}
 
-		$ret = $this->addToStrArray($a, $userB['friends']);
+		$ret = $this->addToStrArray($a, $userB->friends);
 
 		if (!$ret['succeed']) {
 			$this->latestErr = "This user added already.";
