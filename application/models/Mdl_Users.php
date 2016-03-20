@@ -143,7 +143,7 @@ Class Mdl_Users extends Mdl_Campus {
 
 	public function makeFriends($a, $b) {
 		$this->latestErr = "";
-		$userA = $this->get($a);
+		$userA = $this->getEx($a);
 
 		if (!$userA) {
 			$this->latestErr = "UserA is not valid...";
@@ -158,12 +158,12 @@ Class Mdl_Users extends Mdl_Campus {
 		}
 
 		
-		$this->db->from($this->table);
-		$this->db->where('id', $a);
-		$this->db->update($this->table, array('friends'=> json_encode($ret['array'])));
+		$this->db->from('profiles');
+		$this->db->where('user', $a);
+		$this->db->update('profiles', array('friends'=> json_encode($ret['array'])));
 
 
-		$userB = $this->get($b);
+		$userB = $this->getEx($b);
 
 		if (!$userB) {
 			$this->latestErr = "UserB is not valid...";
@@ -177,9 +177,9 @@ Class Mdl_Users extends Mdl_Campus {
 			return;
 		}
 
-		$this->db->from($this->table);
-		$this->db->where('id', $b);
-		$this->db->update($this->table, array('friends'=> json_encode($ret['array'])));
+		$this->db->from('profiles');
+		$this->db->where('user', $b);
+		$this->db->update('profiles', array('friends'=> json_encode($ret['array'])));
 	}
 }
 

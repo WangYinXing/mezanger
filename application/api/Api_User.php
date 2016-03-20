@@ -26,6 +26,11 @@ class Api_User extends Api_Unit {
   _________________________________________________________________________________________________________*/
   public function api_entry_list() {
       parent::validateParams(array("rp", "page", "query", "qtype", "sortname", "sortorder"));
+
+      if ($_POST['page'] <= 0) 
+        parent::returnWithErr("Page number should be larger than 0.");
+      if ($_POST["qtype"] != "username" && $_POST["qtype"] != "email")
+        parent::returnWithErr("Unknown qtype. it should be email or username.");
       
         $data = $this->Mdl_Users->get_list(
           $_POST['rp'],
@@ -39,13 +44,6 @@ class Api_User extends Api_Unit {
       'total'=>$this->Mdl_Users->get_length(),
       'rows'=>$data,
     ));
-/*
-    echo json_encode(array(
-      'page'=>$_POST['page'],
-      'total'=>$this->Mdl_Users->get_length(),
-      'rows'=>$data,
-    ));
-*/
   }
 
   /*--------------------------------------------------------------------------------------------------------
@@ -516,7 +514,7 @@ class Api_User extends Api_Unit {
     Submit device token, udid
   _________________________________________________________________________________________________________*/
   public function api_entry_subscribeAPN() {
-    parent::validateParams(array('user', 'udid', 'devicetoken'));
+    parent::validateParams(array('user', 'devicetoken'));
 
     $users = $this->Mdl_Users->get($_POST["user"]);
 
@@ -524,7 +522,6 @@ class Api_User extends Api_Unit {
 
     $user = $this->Mdl_Users->update(array(
       'id' => $_POST["user"],
-      'udid' => $_POST["udid"],
       'devicetoken' => $_POST["devicetoken"]
       ));
 
@@ -543,7 +540,6 @@ class Api_User extends Api_Unit {
 
     $user = $this->Mdl_Users->update(array(
       'id' => $_POST["user"],
-      'udid' => '',
       'devicetoken' => ''
       ));
 
