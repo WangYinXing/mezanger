@@ -7,6 +7,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 Class Mdl_Prays extends Mdl_Campus {
 
 	function __construct() {
+		parent::__construct();
+		
 		$this->table = 'prays';
 	}
 

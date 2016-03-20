@@ -5,6 +5,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 Class Mdl_Comments extends Mdl_Campus {
 
 	function __construct() {
+		parent::__construct();
+		
 		$this->table = 'comments';
 	}
 

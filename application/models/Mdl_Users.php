@@ -5,6 +5,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 Class Mdl_Users extends Mdl_Campus {
 
 	function __construct() {
+		parent::__construct();
+
 		$this->table = 'users';
 		$this->load->helper("utility");
 	}
@@ -17,7 +19,7 @@ Class Mdl_Users extends Mdl_Campus {
 		return $this->db->get()->num_rows();
 	}
 
-	public function get($id) {
+	public function getEx($id) {
 		$this->db->select("*");
 		$this->db->from($this->table);
 		$this->db->join('profiles',  "users.id = profiles.user");
@@ -45,7 +47,7 @@ Class Mdl_Users extends Mdl_Campus {
 		$args['qbid'] = $qbuser->id;
 		$args['password'] = md5($args['password']);
 
-		$user = utfn_safeArray(array('username', 'email', 'fullname', 'password'), $args);
+		$user = utfn_safeArray(array('qbid', 'username', 'email', 'fullname', 'password'), $args);
 
 		$this->db->insert($this->table, $user);
 		$args['id'] = $userid = $this->db->insert_id();
@@ -56,7 +58,11 @@ Class Mdl_Users extends Mdl_Campus {
 		}
 
 		$profile = utfn_safeArray(array('bday', 'country', 'preferred_language', 'mobile_number','landline_number'), $args);
+
+		// We set role as User first....
+		$profile['role'] = 'User';
 		$profile['user'] = $userid;
+
 
 		if (!$this->db->insert('profiles', $profile)) {
 			$this->latestErr = "Failed to create excute sql with : " . json_encode($profile);
@@ -176,7 +182,5 @@ Class Mdl_Users extends Mdl_Campus {
 		$this->db->update($this->table, array('friends'=> json_encode($ret['array'])));
 	}
 }
-
-
 
 ?>

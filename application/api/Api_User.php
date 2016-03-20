@@ -12,6 +12,8 @@ class Api_User extends Api_Unit {
     $this->load->library('Qbhelper');
     
     $this->load->helper("email");
+    $this->load->helper("utility");
+    $this->load->helper("user");
   }
 
 
@@ -70,7 +72,7 @@ class Api_User extends Api_Unit {
         if ($qbSession == null)
           parent::returnWithErr($this->qbhelper->latestErr);
 
-        $arg = $this->safeArray($arrFields, $_POST);
+        $arg = utfn_safeArray($arrFields, $_POST);
 
         $newUser = $this->Mdl_Users->signup($arg, $qbSession);
 
@@ -116,6 +118,8 @@ class Api_User extends Api_Unit {
     //if (!$user->verified)                               parent::returnWithErr("This account is not verified yet.");
     if ($user->suspended)                               parent::returnWithErr("This account is under suspension.");
     if ($user->password != md5($_POST["password"]))     parent::returnWithErr("Invalid password.");
+
+    $user->password = '';
 
     parent::returnWithoutErr("Signin succeed.", $user);
   }
@@ -569,12 +573,10 @@ class Api_User extends Api_Unit {
   public function api_entry_getprofile() {
     parent::validateParams(array('user'));
 
-    $user = $this->Mdl_Users->get($_POST["user"]);
+    $user = usrfn_getFullUserInfoFromID($_POST['user'], $this);
 
     if ($user == null)
       parent::returnWithErr("User id is not valid.");
-
-    unset($user->password);
     
 
     parent::returnWithoutErr("User profile fetched successfully.", $user);
@@ -584,8 +586,6 @@ class Api_User extends Api_Unit {
     Set profile ..
   _________________________________________________________________________________________________________*/
   public function api_entry_setprofile() {
-    $arrFields = array("username", "email", "fullname", "password", "bday", "sex", "preferred_language", "mobile_number", "landline_number");
-
     parent::validateParams(array('user'));
 
     $user = $this->Mdl_Users->get($_POST["user"]);
@@ -593,14 +593,40 @@ class Api_User extends Api_Unit {
     if ($user == null)
       parent::returnWithErr("User id is not valid.");
 
-    $arg = $this->safeArray($arrFields, $_POST);
 
-    $arg['id'] = $_POST["user"];
+    /*
+        Update basic user info...
+    */
+    $user = utfn_safeArray(array('username', 'email', 'fullname', 'password'), $_POST);
 
-    if (count($arg) == 1)
-      parent::returnWithErr("You should pass the profile 1 entry at least to update.");
+    $user['id'] = $_POST['user'];
 
-    $user = $this->Mdl_Users->update($arg);
+    if (count($user) < 2)
+      parent::returnWithErr("You should pass 1 profile entry at least to be updated.");
+
+    $user = $this->Mdl_Users->update($user);
+
+    /*
+        Update profile....
+    */
+    $profile = utfn_safeArray(array('bday', 'country', 'preferred_language', 'mobile_number','landline_number', 'role'), $_POST);
+
+    $profile['user'] = $user->id;
+
+
+    // Validate role.
+    if (isset($profile['role'])) {
+        if (!utfn_validteRole($profile['role']))
+            parent::returnWithErr("Unknown role." . $profile['role']);
+    }
+
+    $this->load->model('Mdl_Profiles');
+
+    $this->Mdl_Profiles->update($profile);
+
+    // 
+    $user = usrfn_getFullUserInfoFromID($user->id, $this);
+
 
     if ($user == null)
       parent::returnWithErr("Profile has not been updated.");

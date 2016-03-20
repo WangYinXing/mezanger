@@ -69,59 +69,34 @@ class Api_Posts extends Api_Unit {
 	}
 
 
-
 	/*--------------------------------------------------------------------------------------------------------
-
 		Create Request... 
-
 		*** POST
-
 	_________________________________________________________________________________________________________*/
 
 	public function api_entry_create() {
-
 		parent::validateParams(array("type", "host"));
 
 
-
 		if ($_POST["type"] == "REQ_COMMON")				parent::validateParams(array("motive", "detail", "anonymous"));
-
 		else if ($_POST["type"] == "REQ_FEED") {
-
 			parent::validateParams(array("mediatype"));
 
-
-
 			if ($_POST["mediatype"] == "VIDEO" || $_POST["mediatype"] == "IMG") 	parent::validateParams(array("mediaurl"));
-
 			else if ($_POST["mediatype"] == "TEXT") 								parent::validateParams(array("detail"));
-
 			else parent::returnWithErr("Unknown media type.");
-
 		}
-
 		else {
-
 			parent::returnWithErr("Unknown request type.");
-
 		}
-
-
 
 		$request = $this->Mdl_Posts->create($this->safeArray(array('host', 'motive', 'detail', 'anonymous', 'type', 'mediatype', 'mediaurl'), $_POST));
 
-
-
 		if ($request == null)	parent::returnWithErr($this->Mdl_Posts->latestErr);
 
-
-
 		/*
-
 			Created successfully .... 
-
 		*/
-
 		parent::returnWithoutErr("Post has been created successfully.", $request);
 
 	}
@@ -129,50 +104,26 @@ class Api_Posts extends Api_Unit {
 
 
 	/*--------------------------------------------------------------------------------------------------------
-
 		Create Request... 
-
 		*** POST
-
 	_________________________________________________________________________________________________________*/
 
 	public function api_entry_edit() {
-
 		parent::validateParams(array("type", "host", "id"));
 
-
-
 		if ($_POST["type"] == "REQ_COMMON")				parent::validateParams(array("motive", "detail", "anonymous"));
-
-		
-
-		
-
 		else if ($_POST["type"] == "REQ_FEED") {
-
 			parent::validateParams(array("mediatype"));
 
-
-
 			if ($_POST["mediatype"] == "VIDEO" || $_POST["mediatype"] == "IMG") 	parent::validateParams(array("mediaurl"));
-
 			else if ($_POST["mediatype"] == "TEXT") 								parent::validateParams(array("detail"));
-
 			else parent::returnWithErr("Unknown media type.");
-
 		}
-
 		else {
-
 			parent::returnWithErr("Unknown request type.");
-
 		}
-
-
 
 		$request = $this->Mdl_Posts->edit($this->safeArray(array('host', 'motive', 'detail', 'anonymous', 'type', 'mediatype', 'mediaurl', 'id'), $_POST));
-
-
 
 		if ($request == null)	parent::returnWithErr($this->Mdl_Posts->latestErr);
 
@@ -201,193 +152,96 @@ class Api_Posts extends Api_Unit {
 	_________________________________________________________________________________________________________*/
 
 	public function api_entry_del() {
-
 		parent::validateParams(array("id"));
 
-
-
 		$this->Mdl_Posts->del($_POST['id']);
-
 		$error = $this->Mdl_Posts->latestErr;
 
-
-
 		if ($error != "")	parent::returnWithErr($this->Mdl_Posts->latestErr);
-
-
-
 		/*
-
 			Removed successfully .... 
 
 		*/
-
 		parent::returnWithoutErr("Request has been deleted successfully.", null);
-
 	}
 
-
-
-
-
 	/*--------------------------------------------------------------------------------------------------------
-
 		Comment to request...
-
 		*** POST
-
 	_________________________________________________________________________________________________________*/
-
 	public function api_entry_comment() {
-
 		parent::validateParams(array("request", "user", "comment"));
 
-
-
 		$this->load->model("Mdl_Users");
-
 		$this->load->model("Mdl_Posts");
 
-
-
 		if (!$this->Mdl_Users->get($_POST['user']))				parent::returnWithErr("User id is not valid.");
-
 		if (!$this->Mdl_Posts->get($_POST['request']))		parent::returnWithErr("Request id is not valid.");
-
-
 
 		$this->load->model("Mdl_Comments");
 
-
-
-
-
 		if (($comment = $this->Mdl_Comments->create(array(
-
 			'request' => $_POST['request'],
-
 			'commenter' => $_POST['user'],
-
 			'comment' => $_POST['comment'],
-
 			))) == null)	parent::returnWithErr($this->Mdl_Comments->latestErr);
 
-
-
 		parent::returnWithoutErr("User commented successfully.", $comment);
-
 	}
 
-
-
 	/*--------------------------------------------------------------------------------------------------------
-
 		Like to request...
-
 		*** POST
-
 	_________________________________________________________________________________________________________*/
-
 	public function api_entry_like() {
-
 		parent::validateParams(array("request", "user", "like"));
 
-
-
 		if ($_POST["like"] != 0 && $_POST["like"] != 1) {
-
 			parent::returnWithErr("[like] should be '0' or '1'.");
-
 		}
 
-
-
 		$this->load->model("Mdl_Users");
-
 		$this->load->model("Mdl_Posts");
 
-
-
 		if (!$this->Mdl_Users->get($_POST['user']))				parent::returnWithErr("User id is not valid.");
-
 		if (!$this->Mdl_Posts->get($_POST['request']))		parent::returnWithErr("Request id is not valid.");
 
-
-
-
-
 		if (($request = $this->Mdl_Posts->like(
-
 			array(
-
 				'request' => $_POST['request'],
-
 				'user' => $_POST['user'],
-
 				'like' => $_POST['like']
-
 				)
-
 			)) == null)	parent::returnWithErr($this->Mdl_Posts->latestErr);
-
 
 
 		parent::returnWithoutErr("User liked or disliked successfully.", $request);
-
 	}
 
 
 
 	/*--------------------------------------------------------------------------------------------------------
-
 		Like to request...
-
 		*** POST
-
 	_________________________________________________________________________________________________________*/
-
 	public function api_entry_share() {
-
 		parent::validateParams(array("request", "user"));
 
-
-
 		$this->load->model("Mdl_Users");
-
 		$this->load->model("Mdl_Posts");
 
-
-
 		if (!$this->Mdl_Users->get($_POST['user']))				parent::returnWithErr("User id is not valid.");
-
 		if (!$this->Mdl_Posts->get($_POST['request']))		parent::returnWithErr("Request id is not valid.");
 
-
-
-
-
 		if (($request = $this->Mdl_Posts->share(
-
 			array(
-
 				'request' => $_POST['request'],
-
 				'user' => $_POST['user']
-
 				)
-
 			)) == null)	parent::returnWithErr($this->Mdl_Posts->latestErr);
 
-
-
 		parent::returnWithoutErr("User sharing is recorded successfully.", $request);
-
 	}
-
 }
-
-
-
-
 
 ?>

@@ -22,9 +22,7 @@ define('QB_DEFAULT_PASSWORD', "Nithiya2405");
 
 
 class Qbconfig {
-
-
-
+	
 }
 
 

@@ -43,4 +43,15 @@ function utfn_safeArray($argNames, $argSrc) {
     return $safeArgs;
 }
 
+function utfn_validteRole($role) {
+    $arrRoles = unserialize(MZUSER_ROLES);
+
+    foreach ($arrRoles as $validRole) {
+        if ($role == $validRole)
+            return true;
+    }
+
+    return false;
+}
+
 ?>
