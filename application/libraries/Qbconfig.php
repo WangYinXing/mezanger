@@ -1,8 +1,8 @@
 <?php
 
-define('QB_APP_ID', "14756");
-define('QB_AUTH_KEY', "W2tLBk4Oj2Nmdmk");
-define('QB_AUTH_SECRET', "xHMmtW8gfrjFmq8");
+define('QB_APP_ID', "37709");
+define('QB_AUTH_KEY', "c3Eeez9AkZhahem");
+define('QB_AUTH_SECRET', "EcURejeQ-3whP9Z");
 
 
 
