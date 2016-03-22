@@ -519,6 +519,10 @@ class Api_User extends Api_Unit {
   public function api_entry_subscribeAPN() {
     parent::validateParams(array('user', 'devicetoken', 'platform'));
 
+    if ($_POST['platform'] != "android" || $_POST['platform'] != "ios") {
+        parent::returnWithErr("Unknown platform.");
+    }
+
     $users = $this->Mdl_Users->get($_POST["user"]);
 
     if (!$this->Mdl_Users->get($_POST["user"]))     parent::returnWithErr("User id is not valid.");
