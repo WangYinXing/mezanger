@@ -96,7 +96,13 @@ Class Mdl_Users extends Mdl_Campus {
 		$this->db->from($this->table);
 
 		$this->db->where("qbid", $qbid);
-		$user = $this->db->get()->result()[0];
+
+		$users = $this->db->get()->result();
+
+		if (count($users) == 0)
+			return null;
+
+		$user = $users[0];
 
 		$this->db->select("*");
 		$this->db->where("qbid", $qbid);

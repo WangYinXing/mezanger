@@ -67,7 +67,6 @@ class Api_User extends Api_Unit {
           $_POST['email'],
           QB_DEFAULT_PASSWORD
         );
-
         
         if ($qbSession == null)
           parent::returnWithErr($this->qbhelper->latestErr);
@@ -132,7 +131,10 @@ class Api_User extends Api_Unit {
 
     $user = $this->Mdl_Users->signin($_POST["qbid"], $_POST["token"]);
 
-    parent::returnWithoutErr("Authenticated in QB.", $user);
+    if ($user == null)
+        parent::returnWithErr("Authentication failed.");
+
+    parent::returnWithoutErr("Authenticated in QB.", $users[0]);
   }
 
   /*--------------------------------------------------------------------------------------------------------
