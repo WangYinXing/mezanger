@@ -729,7 +729,6 @@ class Api_User extends Api_Unit {
         $result = $this->qbhelper->sendGCM($receiver->devicetoken, $payloadForAndroid);
 
         parent::returnWithoutErr($result);
-        
     }
     
     

@@ -19,6 +19,22 @@ Class Mdl_Users extends Mdl_Campus {
 		return $this->db->get()->num_rows();
 	}
 
+	public function getAll($field = "", $val = "") {
+		$this->db->select("*");
+		$this->db->from($this->table);
+		$this->db->join('profiles', 'users.id = profiles.user', 'left');
+
+		if ($field != "" && $val != "")
+			$this->db->where($field, $val);
+
+		$users = $this->db->get();
+
+		if ($users->num_rows() == 0)
+			return;
+
+		return $users->result();
+	}
+
 	public function getEx($id) {
 		$this->db->select("*");
 		$this->db->from($this->table);
