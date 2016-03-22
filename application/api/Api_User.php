@@ -722,7 +722,7 @@ class Api_User extends Api_Unit {
         }    
     }
     else if ($receiver->platform == "android") {
-        $result = $this->qbhelper->sendGCM($receiver->devicetoken, json_encode($payloadForAndroid));
+        $result = $this->qbhelper->sendGCM($receiver->devicetoken, $payloadForAndroid);
 
         parent::returnWithoutErr($result);
         
