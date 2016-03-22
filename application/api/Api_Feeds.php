@@ -48,21 +48,25 @@ class Api_Feeds extends Api_Unit {
 			if (count($tFeedsVerified)) {
 				$feed->tFeeds = $tFeedsVerified;
 				$feed->verified = true;
+
+				foreach ($feed->tFeeds as $key => $tFeed) {
+					$user = $this->Mdl_Users->get($tFeed->author);
+
+					unset($user->password);
+
+					$tFeed->author = $user;
+				}
 			}
 			else {
 				$tFeeds = $this->Mdl_TFeeds->getAll("feed", $feed->id);
 				if (count($tFeeds) == 0)
 					continue;
-
 				foreach ($tFeeds as $key => $tFeed) {
 					$user = $this->Mdl_Users->get($tFeed->author);
 
-					$tFeed->author = array(
-						'qbid' => $user->qbid,
-						'id' => $user->id,
-						'username' => $user->username,
-						'email' => $user->email
-						);
+					unset($user->password);
+
+					$tFeed->author = $user;
 				}
 
 				$feed->tFeeds = $tFeeds;
