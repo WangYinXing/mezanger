@@ -184,7 +184,7 @@ class Qbhelper {
 	public function sendGCM($ids, $content) {
 		// API access key from Google API's Console
 
-		ob_start();
+		//ob_start();
 		
 		$registrationIds = array( $_GET['id'] );
 		// prep the bundle
@@ -210,9 +210,11 @@ class Qbhelper {
 		curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
 		$result = curl_exec($ch );
 
+		echo $result;
+
 		curl_close( $ch );
 
-		ob_end_clean();
+		//ob_end_clean();
 
 		return $result;
 	}
