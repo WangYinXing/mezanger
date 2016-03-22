@@ -703,13 +703,17 @@ class Api_User extends Api_Unit {
 
     $payloadForAndroid = array(
             'message'   => $msg,
-            'title'     => $_POST['subject'],
+            //'title'     => $_POST['subject'],
+            'subject'   => $_POST['subject'],
             'subtitle'  => '',
             'tickerText'    => '',
             'vibrate'   => 1,
             'sound'     => 1,
-            'largeIcon' => 'large_icon',
-            'smallIcon' => 'small_icon'
+            'sender' => $sender,
+            'receiver' => $receiver,
+            'id' => $noti['id']
+            //'largeIcon' => 'large_icon',
+            //'smallIcon' => 'small_icon'
         );
 
     
