@@ -517,7 +517,7 @@ class Api_User extends Api_Unit {
     Submit device token, udid
   _________________________________________________________________________________________________________*/
   public function api_entry_subscribeAPN() {
-    parent::validateParams(array('user', 'devicetoken'));
+    parent::validateParams(array('user', 'devicetoken', 'platform'));
 
     $users = $this->Mdl_Users->get($_POST["user"]);
 
@@ -525,7 +525,8 @@ class Api_User extends Api_Unit {
 
     $user = $this->Mdl_Users->update(array(
       'id' => $_POST["user"],
-      'devicetoken' => $_POST["devicetoken"]
+      'devicetoken' => $_POST["devicetoken"],
+      'platform' => $_POST['platform']
       ));
 
     parent::returnWithoutErr("Subscription has been done successfully.", $user);
@@ -687,7 +688,7 @@ class Api_User extends Api_Unit {
         ));
 
 
-    $payload = array(
+    $payloadForiOS = array(
       'sound' => "default",
       'subject' => $_POST['subject'],
       'alert' => $msg,
@@ -696,15 +697,33 @@ class Api_User extends Api_Unit {
       'id' => $noti['id']
       );
 
+    $payloadForAndroid = array(
+            'message'   => $msg,
+            'title'     => $_POST['subject'],
+            'subtitle'  => '',
+            'tickerText'    => '',
+            'vibrate'   => 1,
+            'sound'     => 1,
+            'largeIcon' => 'large_icon',
+            'smallIcon' => 'small_icon'
+        );
+
     
-
-
-    if (($failedCnt = $this->qbhelper->sendPN($receiver->devicetoken, json_encode($payload))) == 0) {
-      parent::returnWithoutErr("Contact request has been sent successfully.");
+    if ($receiver->platform == "ios") {
+        if (($failedCnt = $this->qbhelper->sendAPN($receiver->devicetoken, json_encode($payloadForiOS))) == 0) {
+          parent::returnWithoutErr("Contact request has been sent successfully.");
+        }
+        else {
+          parent::returnWithErr($failedCnt . " requests have not been sent.");
+        }    
     }
-    else {
-      parent::returnWithErr($failedCnt . " requests have not been sent.");
+    else if ($receiver->platform == "android") {
+        $result = $this->qbhelper->sendGCM($receiver->devicetoken, json_encode($payloadForAndroid));
+
+        parent::returnWithoutErr($result);
+        
     }
+    
     
   }
 

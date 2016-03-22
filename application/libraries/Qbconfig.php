@@ -21,6 +21,10 @@ define('QB_PATH_EVENTS', "events.json");
 define('QB_DEFAULT_PASSWORD', "Nithiya2405");
 
 
+// GCM API KEY
+define( 'GCM_API_KEY', 'AIzaSyC-0p36zcqLhkqxgGl6SceEsCRJnpXsOEQ' );
+
+
 class Qbconfig {
 	
 }

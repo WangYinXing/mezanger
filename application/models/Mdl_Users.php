@@ -145,7 +145,6 @@ Class Mdl_Users extends Mdl_Campus {
 		$this->latestErr = "";
 		$userA = $this->getEx($a);
 
-
 		if ($userA == null) {
 			$this->latestErr = "UserA is not valid...";
 			return;
