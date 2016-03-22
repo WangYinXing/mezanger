@@ -519,7 +519,7 @@ class Api_User extends Api_Unit {
   public function api_entry_subscribeAPN() {
     parent::validateParams(array('user', 'devicetoken', 'platform'));
 
-    if ($_POST['platform'] != "android" || $_POST['platform'] != "ios") {
+    if ($_POST['platform'] != "android" && $_POST['platform'] != "ios") {
         parent::returnWithErr("Unknown platform.");
     }
 
