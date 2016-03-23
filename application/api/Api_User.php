@@ -41,10 +41,11 @@ class Api_User extends Api_Unit {
           $_POST['qtype'],
           $_POST['sortname'],
           $_POST['sortorder']);
+
         parent::returnWithoutErr("Succeed to list.", array(
-      'page'=>$_POST['page'],
-      'total'=>$this->Mdl_Users->get_length(),
-      'rows'=>$data,
+            'page'=>$_POST['page'],
+            'total'=>$this->Mdl_Users->get_length(),
+            'rows'=>$data,
     ));
   }
 
@@ -615,7 +616,7 @@ class Api_User extends Api_Unit {
     /*
         Update profile....
     */
-    $profile = utfn_safeArray(array('bday', 'country', 'preferred_language', 'mobile_number','landline_number', 'role'), $_POST);
+    $profile = utfn_safeArray(array('avatar', 'bday', 'country', 'preferred_language', 'mobile_number','landline_number', 'role'), $_POST);
 
     $profile['user'] = $user->id;
 
@@ -645,6 +646,20 @@ class Api_User extends Api_Unit {
     Make friends ...
   _________________________________________________________________________________________________________*/
   public function api_entry_sendnotification() {
+
+    $content = '
+    {
+      "list_id": "146161",
+      "email_address": "' . "asd@asd.com" . '",
+      "status": "subscribed",
+      "status_if_new": "subscribed"
+    }
+  ';
+
+  echo (strlen($content));
+  exit;
+
+
     parent::validateParams(array('sender', 'receiver', 'subject'));
 
     if(!$this->Mdl_Users->get($_POST['sender']))    parent::returnWithErr("Sender is not valid");
@@ -686,6 +701,7 @@ class Api_User extends Api_Unit {
 
     // Create notification record and get id for sending pushnotification.
     $this->load->model('Mdl_Notifications');
+    
     $noti = $this->Mdl_Notifications->create(array(
         'subject' => $_POST['subject'],
         'message' => $msg,

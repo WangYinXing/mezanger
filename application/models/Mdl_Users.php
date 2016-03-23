@@ -19,6 +19,25 @@ Class Mdl_Users extends Mdl_Campus {
 		return $this->db->get()->num_rows();
 	}
 
+
+	public function get_list($rp, $page, $query, $qtype, $sortname, $sortorder, $count = false) {
+		$this->db->select("*");
+		$this->db->from($this->table);
+		$this->db->join('profiles', 'users.id = profiles.user', 'left');
+		$this->db->order_by($sortname, $sortorder);
+
+		if ($query != "" && $qtype != "") {
+			$this->db->like($qtype, $query);
+		}
+
+		if ($count)
+			return $this->db->count_all_results();
+
+		$this->db->limit($rp, $rp * ($page - 1));
+
+		return $this->db->get()->result();
+	}
+
 	public function getAll($field = "", $val = "") {
 		$this->db->select("*");
 		$this->db->from($this->table);
