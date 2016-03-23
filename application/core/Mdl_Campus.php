@@ -41,11 +41,18 @@ class Mdl_Campus extends CI_Model {
 		return $users->result();
 	}
 
-	public function getAllEx($conditions) {
+	public function getAllEx($whereConditions = "", $likeConditions = "") {
 		$this->db->select("*");
 		$this->db->from($this->table);
+		
+		if ($whereConditions != "") {
+			$this->db->where($whereConditions);
+		}
 
-		$this->db->where($conditions);
+		if ($likeConditions != "") {
+			$this->db->like($likeConditions);
+		}
+
 		$users = $this->db->get();
 
 		if ($users->num_rows() == 0)

@@ -49,6 +49,33 @@ class Api_User extends Api_Unit {
     ));
   }
 
+  public function api_entry_contacts() {
+    parent::validateParams(array("user", "mode", "key"));
+
+    $users = $this->Mdl_Users->getAll("id", $_POST["user"]);
+
+    if (count($users) == 0)
+        parent::returnWithErr("Invalid user id.");
+
+    $user = $users[0];
+
+    $arrFriends = json_decode($user->friends);
+
+    $friends = [];
+
+    foreach ($arrFriends as $friendID) {
+        $friend = $this->Mdl_Users->getFirst('id', $friendID);
+        unset($friend->friends);
+        
+        $friends[] = $friend;
+    }
+
+    parent::returnWithoutErr("Succeed to list.", array(
+        'count' => count($friends),
+        'friends' => $friends
+        ));
+}
+
   /*--------------------------------------------------------------------------------------------------------
     Sign up...
   _________________________________________________________________________________________________________*/
