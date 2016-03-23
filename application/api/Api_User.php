@@ -50,9 +50,14 @@ class Api_User extends Api_Unit {
   }
 
   public function api_entry_contacts() {
-    parent::validateParams(array("user", "mode", "key"));
+    parent::validateParams(array("user", "mode", "qtype", "query"));
+
+    if ($_POST["mode"] != "friendsonly" && $_POST["mode"] != "nonfriendsonly") {
+        parent::returnWithErr("Invalid mode. mode should be 'friendsonly' or 'nonfriendsonly'.");
+    }
 
     $users = $this->Mdl_Users->getAll("id", $_POST["user"]);
+    $contacts = $this->Mdl_Users->getAllEx([], [$_POST['qtype'] => $_POST['query']]);
 
     if (count($users) == 0)
         parent::returnWithErr("Invalid user id.");
@@ -63,12 +68,16 @@ class Api_User extends Api_Unit {
 
     $friends = [];
 
-    foreach ($arrFriends as $friendID) {
-        $friend = $this->Mdl_Users->getFirst('id', $friendID);
-        unset($friend->friends);
-        
-        $friends[] = $friend;
+    if (count($contacts) && count($arrFriends)) {
+        foreach ($contacts as $contact) {
+            foreach ($arrFriends as $friendID) {
+                if ($contact->id == $friendID) {
+                    $friends[] = $contact;
+                }
+            }
+        }
     }
+    
 
     parent::returnWithoutErr("Succeed to list.", array(
         'count' => count($friends),

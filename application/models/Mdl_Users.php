@@ -78,6 +78,36 @@ Class Mdl_Users extends Mdl_Campus {
 		return null;
 	}
 
+	public function getAllEx($whereConditions, $likeConditions = []) {
+		$this->db->select("*");
+
+		$this->db->from($this->table);
+		$this->db->join('profiles', 'users.id = profiles.user', 'left');
+		
+		if (count($whereConditions)) {
+			$this->db->where($whereConditions);
+		}
+
+		if (count($likeConditions)) {
+			$queryIsValid = true;
+
+			foreach($likeConditions as $condition=>$value) {
+				if ($condition == "" || $value == "")
+					$queryIsValid = false;
+			}
+
+			if ($queryIsValid)
+				$this->db->like($likeConditions);
+		}
+
+		$users = $this->db->get();
+
+		if ($users->num_rows() == 0)
+			return;
+
+		return $users->result();
+	}
+
 	public function signup($args, $qbuser) {
 		$this->db->select("*");
 		$this->db->from($this->table);
