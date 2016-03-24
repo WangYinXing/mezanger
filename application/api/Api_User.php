@@ -682,20 +682,6 @@ class Api_User extends Api_Unit {
     Make friends ...
   _________________________________________________________________________________________________________*/
   public function api_entry_sendnotification() {
-
-    $content = '
-    {
-      "list_id": "146161",
-      "email_address": "' . "asd@asd.com" . '",
-      "status": "subscribed",
-      "status_if_new": "subscribed"
-    }
-  ';
-
-  echo (strlen($content));
-  exit;
-
-
     parent::validateParams(array('sender', 'receiver', 'subject'));
 
     if(!$this->Mdl_Users->get($_POST['sender']))    parent::returnWithErr("Sender is not valid");
