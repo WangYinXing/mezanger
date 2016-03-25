@@ -89,10 +89,8 @@ class Api_User extends Api_Unit {
     Sign up...
   _________________________________________________________________________________________________________*/
     public function api_entry_signup() {
-        $arrFields = array("username", "email", "fullname", "password", "bday", "sex", "preferred_language", "mobile_number", "landline_number");
+        $arrFields = array("username", "email", "fullname", "password", "bday", "sex", "language", "preferred_language", "mobile_number", "landline_number");
         parent::validateParams($arrFields);
-
-
 
         $qbToken = $this->qbhelper->generateSession();
 

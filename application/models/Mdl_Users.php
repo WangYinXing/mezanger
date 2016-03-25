@@ -131,7 +131,7 @@ Class Mdl_Users extends Mdl_Campus {
 			return;
 		}
 
-		$profile = utfn_safeArray(array('bday', 'country', 'preferred_language', 'mobile_number','landline_number'), $args);
+		$profile = utfn_safeArray(array('bday', 'country', 'language','preferred_language', 'mobile_number','landline_number'), $args);
 
 		// We set role as User first....
 		$profile['role'] = 'User';
