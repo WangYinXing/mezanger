@@ -13,10 +13,18 @@ Class Mdl_Feeds extends Mdl_Campus {
 
 	public function create($feed) {
 		$this->load->model("Mdl_Users");
-		$user = $this->Mdl_Users->get($feed['author']);
+		$user = $this->Mdl_Users->get($feed['sender']);
 
 		if ($user == null) {
-			$this->latestErr = "Author id is not valid.";
+			$this->latestErr = "Sender id is not valid.";
+
+			return;
+		}
+
+		$user = $this->Mdl_Users->get($feed['receiver']);
+
+		if ($user == null) {
+			$this->latestErr = "Receiver id is not valid.";
 
 			return;
 		}
@@ -35,6 +43,16 @@ Class Mdl_Feeds extends Mdl_Campus {
 		$feed['id'] = $feed_id;
 
 		return $feed;
+	}
+
+	public function getLatest($duration) {
+		$this->db->select('*');
+		$this->db->from('feeds');
+		$this->db->where("date_sub(now(), INTERVAL $duration MINUTE) < updated_time");
+
+		$feeds = $this->db->get()->result();
+
+		return $feeds;
 	}
 }
 

@@ -652,7 +652,7 @@ class Api_User extends Api_Unit {
     /*
         Update profile....
     */
-    $profile = utfn_safeArray(array('avatar', 'bday', 'country', 'preferred_language', 'mobile_number','landline_number', 'role'), $_POST);
+    $profile = utfn_safeArray(array('avatar', 'bday', 'country', 'language', 'preferred_language', 'mobile_number','landline_number', 'role'), $_POST);
 
     $profile['user'] = $user->id;
 
