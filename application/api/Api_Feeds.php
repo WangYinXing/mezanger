@@ -21,7 +21,7 @@ class Api_Feeds extends Api_Unit {
 ########################################################################################################################################################*/
 
 	public function api_entry_list() {
-		parent::validateParams(array("rp", "page", "user", "duration"));
+		parent::validateParams(array("user", "duration"));
 
 		$this->load->model('Mdl_Users');
 		$this->load->model('Mdl_Feeds');
@@ -104,6 +104,59 @@ class Api_Feeds extends Api_Unit {
 		));
 	}
 
+	public function api_entry_get() {
+		parent::validateParams(array("qbmsgid", "qbdlgid", "sender", "receiver"));
+
+		$arg = utfn_safeArray(array("qbmsgid", "qbdlgid", "sender", "receiver"), $_POST);
+
+		$this->load->model('Mdl_Feeds');
+		$this->load->model('Mdl_TFeeds');
+
+		$feeds = $this->Mdl_Feeds->getAllEx($arg);
+
+		if (!count($feeds)) {
+			parent::returnWithErr('Feed not found.');
+		}
+
+		$feed = $feeds[0];
+
+		$tFeedsVerified = $this->Mdl_TFeeds->getAllEx(["feed" => $feed->id, "verified" => 1]);
+		$feed->tFeeds = [];
+
+		if (count($tFeedsVerified)) {
+			$feed->tFeeds = $tFeedsVerified;
+			$feed->verified = true;
+
+			foreach ($feed->tFeeds as $key => $tFeed) {
+				$user = $this->Mdl_Users->getFirst('id', $tFeed->author);
+
+				unset($user->password);
+
+				$tFeed->author = $user;
+			}
+		}
+		else {
+			$tFeeds = $this->Mdl_TFeeds->getAll("feed", $feed->id);
+
+			if (count($tFeeds)) {
+				foreach ($tFeeds as $key => $tFeed) {
+					$user = $this->Mdl_Users->getFirst('id', $tFeed->author);
+
+					unset($user->password);
+
+					$tFeed->author = $user;
+				}
+
+				$feed->tFeeds = $tFeeds;
+			}
+		}
+
+			
+		$feed->tFeedsCnt = count($tFeeds);
+
+		parent::returnWithoutErr("Request has been listed successfully.", $feed);
+	}
+
 
 	/*--------------------------------------------------------------------------------------------------------
 		Create Request... 
@@ -111,9 +164,9 @@ class Api_Feeds extends Api_Unit {
 	_________________________________________________________________________________________________________*/
 
 	public function api_entry_create() {
-		parent::validateParams(array("sender", "receiver", "content"));
+		parent::validateParams(array("qbmsgid", "qbdlgid", "sender", "receiver", "content"));
 
-		$feed = $this->Mdl_Feeds->create(utfn_safeArray(array('sender', 'receiver','content', 'title', 'category'), $_POST));
+		$feed = $this->Mdl_Feeds->create(utfn_safeArray(array('qbmsgid', 'qbdlgid', 'sender', 'receiver','content', 'title', 'category'), $_POST));
 
 		if ($feed == null)	parent::returnWithErr($this->Mdl_Feeds->latestErr);
 
