@@ -166,6 +166,12 @@ class Api_Feeds extends Api_Unit {
 	public function api_entry_create() {
 		parent::validateParams(array("qbmsgid", "qbdlgid", "sender", "receiver", "content"));
 
+		if (!$_POST["qbmsgid"])
+			parent::returnWithErr("qbmsgid is not valid.");
+
+		if (!$_POST["qbdlgid"])
+			parent::returnWithErr("qbdlgid is not valid.");
+
 		$feed = $this->Mdl_Feeds->create(utfn_safeArray(array('qbmsgid', 'qbdlgid', 'sender', 'receiver','content', 'title', 'category'), $_POST));
 
 		if ($feed == null)	parent::returnWithErr($this->Mdl_Feeds->latestErr);
