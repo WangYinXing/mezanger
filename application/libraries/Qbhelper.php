@@ -250,7 +250,7 @@ class Qbhelper {
 		////////////////////////////////////////////////////////////////////////////////
 		// start to create connection
 		$ctx = stream_context_create();
-		stream_context_set_option($ctx, 'ssl', 'local_cert', 'pushcert.pem');
+		stream_context_set_option($ctx, 'ssl', 'local_cert', 'WFDev.pem');
 		stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
 
 		echo count($deviceIds) . ' devices will receive notifications.<br />';

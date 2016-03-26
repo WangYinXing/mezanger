@@ -20,7 +20,7 @@ Class Mdl_Users extends Mdl_Campus {
 	}
 
 
-	public function get_list($rp, $page, $query, $qtype, $sortname, $sortorder, $count = false) {
+	public function _get_list($rp, $page, $query, $qtype, $sortname, $sortorder, $count = false) {
 		$this->db->select("*");
 		$this->db->from($this->table);
 		$this->db->join('profiles', 'users.id = profiles.user', 'left');

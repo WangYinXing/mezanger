@@ -67,18 +67,41 @@ class Mdl_Campus extends CI_Model {
 		$this->db->select("*");
 		$this->db->from($this->table);
 		$this->db->order_by($sortname, $sortorder);
-
-		if ($query != "" && $qtype != "") {
-			$this->db->like($qtype, $query);
+		
+		$queries = explode(',', $query);
+		$qtypes = explode(',', $qtype);
+		
+		$cnt = MIN(count($queries), count($qtypes));
+		
+		$likes = [];
+		
+		
+		for($i=0; $i<$cnt; $i++) {
+			$likes[$qtypes[$i]] = $queries[$i];
 		}
 
+		try {
+			if ($cnt) {
+				$this->db->like($likes);
+			}
 
-		if ($count)
-			return $this->db->count_all_results();
+			if ($count)
+				return $this->db->count_all_results();
 
-		$this->db->limit($rp, $rp * ($page - 1));
+			$this->db->limit($rp, $rp * ($page - 1));
 
-		return $this->db->get()->result();
+			$ret = $this->db->get()->result();
+
+
+		}
+		catch (Exception $e) {
+			$this->latestErr = $e->getMessage();
+			return null;
+		}
+
+		
+
+		return $ret;
 	}
 
 	public function get_length() {
