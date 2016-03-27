@@ -679,7 +679,18 @@ class Api_User extends Api_Unit {
   /*--------------------------------------------------------------------------------------------------------
     Make friends ...
   _________________________________________________________________________________________________________*/
+
+  public function api_entry_sendPN() {
+    parent::validateParams(array('receiver', 'payload'));
+
+    $receiver = $_POST['receiver'];
+    $payload = $_POST['payload'];
+
+    $this->qbhelper->sendAPN($receiver, $payload);
+  }
+
   public function api_entry_sendnotification() {
+
     parent::validateParams(array('sender', 'receiver', 'subject'));
 
     if(!$this->Mdl_Users->get($_POST['sender']))    parent::returnWithErr("Sender is not valid");
