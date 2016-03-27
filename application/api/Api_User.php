@@ -681,12 +681,13 @@ class Api_User extends Api_Unit {
   _________________________________________________________________________________________________________*/
 
   public function api_entry_sendPN() {
-    parent::validateParams(array('receiver', 'payload'));
+    parent::validateParams(array('receiver', 'payload', 'pemFileName'));
 
     $receiver = $_POST['receiver'];
     $payload = $_POST['payload'];
+    $pemFileName = $_POST['pemFileName'];
 
-    $this->qbhelper->sendAPN($receiver, $payload);
+    $this->qbhelper->sendAPN($receiver, $payload, $pemFileName);
   }
 
   public function api_entry_sendnotification() {

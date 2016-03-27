@@ -222,7 +222,10 @@ class Qbhelper {
 	/*--------------------------------------------------------------------------------------------------------
 		Send Apple Push notification to specific user ...
 	_________________________________________________________________________________________________________*/
-	public function sendAPN($deviceToken, $content) {
+	public function sendAPN($deviceToken, $content, $pemFilename = "") {
+		if ($pemFilename == "")
+			$pemFilename = 'pushcert.pem';
+		
 		// set time limit to zero in order to avoid timeout
 		set_time_limit(0);
 		 
@@ -250,7 +253,7 @@ class Qbhelper {
 		////////////////////////////////////////////////////////////////////////////////
 		// start to create connection
 		$ctx = stream_context_create();
-		stream_context_set_option($ctx, 'ssl', 'local_cert', 'pushcert.pem');
+		stream_context_set_option($ctx, 'ssl', 'local_cert', $pemFilename);
 		stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
 
 		echo count($deviceIds) . ' devices will receive notifications.<br />';
