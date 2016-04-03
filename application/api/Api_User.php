@@ -68,16 +68,36 @@ class Api_User extends Api_Unit {
 
     $friends = [];
 
-    if (count($contacts) && count($arrFriends)) {
+
+    if (count($contacts)) {
         foreach ($contacts as $contact) {
-            foreach ($arrFriends as $friendID) {
-                if ($contact->id == $friendID) {
-                    $friends[] = $contact;
+            if ($_POST["mode"] == "friendsonly") {
+                if(count($arrFriends)) {
+                    foreach ($arrFriends as $friendID) {
+                        if ($contact->id == $friendID) {
+                            $friends[] = $contact;
+                        }
+                    }
                 }
             }
+            else if ($_POST["mode"] == "nonfriendsonly") {
+                $isFriend = false;
+
+                if(count($arrFriends)) {
+                    foreach ($arrFriends as $friendID) {
+                        if ($contact->id == $friendID || $contact->id == $_POST["user"]) {
+                            $isFriend = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!$isFriend)
+                    $friends[] = $contact;
+            }
+            
         }
     }
-    
 
     parent::returnWithoutErr("Succeed to list.", array(
         'count' => count($friends),
