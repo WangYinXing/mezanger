@@ -81,7 +81,7 @@ class Mdl_Campus extends CI_Model {
 		}
 
 		try {
-			if ($cnt) {
+			if ($cnt && $query != '' && $qtype != '') {
 				$this->db->like($likes);
 			}
 

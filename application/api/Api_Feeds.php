@@ -111,6 +111,7 @@ class Api_Feeds extends Api_Unit {
 
 		$this->load->model('Mdl_Feeds');
 		$this->load->model('Mdl_TFeeds');
+		$this->load->model('Mdl_Users');
 
 		$feeds = $this->Mdl_Feeds->getAllEx($arg);
 
