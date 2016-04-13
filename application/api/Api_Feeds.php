@@ -153,7 +153,7 @@ class Api_Feeds extends Api_Unit {
 		}
 
 			
-		$feed->tFeedsCnt = count($tFeeds);
+		$feed->tFeedsCnt = count($feed->tFeeds);
 
 		parent::returnWithoutErr("Request has been listed successfully.", $feed);
 	}
