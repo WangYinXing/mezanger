@@ -11,38 +11,101 @@ Class Mdl_Feeds extends Mdl_Campus {
 	}
 
 
-	public function create($feed) {
+	public function create($feed, $arrReceivers) {
 		$this->load->model("Mdl_Users");
 		$user = $this->Mdl_Users->get($feed['sender']);
 
 		if ($user == null) {
 			$this->latestErr = "Sender id is not valid.";
-
 			return;
 		}
 
-		$user = $this->Mdl_Users->get($feed['receiver']);
 
-		if ($user == null) {
-			$this->latestErr = "Receiver id is not valid.";
+		$arrLanguages = [];
 
+		foreach ($arrReceivers as $receiverID) {
+			// Get receiver's record...
+			$receiver = $this->Mdl_Users->getEx($receiverID);
+
+			if ($receiver == null) {
+				continue;
+			}
+
+			$arrLanguages[] = $receiver->language;
+		}
+
+		$arrLanguages = array_unique($arrLanguages);
+
+		if ($arrLanguages[0] == $feed['language']) {
+			$this->latestErr = "No need to translate. sender and receivers are the same people.";
 			return;
+		}
+
+		$engContent = null;
+
+		/*
+			If sender sent message as English...
+		*/
+		if (strtolower($feed['language']) == "english") {
+			$engContent = $feed['content'];
 		}
 
 		$this->db->insert($this->table, $feed);
-		$feed_id = $this->db->insert_id();
+		$feedID = $this->db->insert_id();
 
 
-		if ($feed_id == 0) {
+		if ($feedID == 0) {
 			$this->latestErr = "Failed to excute sql with : " . json_encode($arg);
 		}
 		else {
 			$this->latestErr = "";
 		}
+		
 
-		$feed['id'] = $feed_id;
+		foreach ($arrLanguages as $language) {
+			// Receiver's language is English and sender sent message as English. don't need to translate....
+			if (strtolower($language) == "english" && strtolower($feed['language']) == "english") {
+				continue;
+			}
+
+			// They are same people.
+			if ($language == $feed['language']) {
+				continue;
+			}
+
+			$this->db->insert('tfeeds', [
+					'feed' => $feedID,
+					'language' => $feed['language'],
+					'target_language' => $language,
+					'eng_content' => $engContent
+				]);
+			$tfeedID = $this->db->insert_id();
+		}
+
+		$feed['id'] = $feedID;
 
 		return $feed;
+	}
+
+	public function createDraftFeed($draftFeed) {
+		$this->db->insert('draft_feeds', $draftFeed);
+		$draftFeed['id'] = $this->db->insert_id();
+
+		return $draftFeed;
+	}
+
+	public function getEx($id, $type) {
+		$this->db->select("*");
+		$this->db->from($type);
+		$this->db->where("id = $id");
+
+		$users = $this->db->get();
+
+		if ($users->num_rows() == 1) {
+			return $users->result()[0];
+		}
+
+		return;
 	}
 
 	public function getLatest($duration) {

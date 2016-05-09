@@ -42,8 +42,12 @@ class Mdl_Campus extends CI_Model {
 	}
 
 	public function getAllEx($whereConditions, $likeConditions = []) {
+		$this->getAllEx($this->table, $whereConditions, $likeConditions);
+	}
+
+	public function getAllFromTable($table, $whereConditions, $likeConditions = []) {
 		$this->db->select("*");
-		$this->db->from($this->table);
+		$this->db->from($table);
 
 		if (count($whereConditions)) {
 			$this->db->where($whereConditions);
@@ -120,6 +124,13 @@ class Mdl_Campus extends CI_Model {
 		$this->db->where("id", $id);
 
 		$this->db->update($this->table, $arrValues);
+	}
+
+	public function updateWithTable($id, $arrValues, $table) {
+		$this->db->from($table);
+		$this->db->where("id", $id);
+
+		$this->db->update($table, $arrValues);
 	}
 
 	public function addToStrArray($val, $strArray) {

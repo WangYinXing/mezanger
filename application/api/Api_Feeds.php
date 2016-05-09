@@ -40,67 +40,17 @@ class Api_Feeds extends Api_Unit {
 		$filteredFeeds = [];
 
 		foreach ($feeds as $feed) {
-			if ($feed->sender == $_POST['user'] || $feed->receiver == $_POST['user']) {
-				continue;
-			}
+			$feed->tfeeds = $this->Mdl_Feeds->getAllFromTable('tfeeds', 'feed = ' . $feed->id);;
 
-			$sender = $this->Mdl_Users->getFirst('id', $feed->sender);
-			$receiver = $this->Mdl_Users->getFirst('id', $feed->receiver);
-
-			if ($sender == null || $receiver == null)
-				continue;
-
-			if ($sender->language == $receiver->language)
-				continue;
-
-			if (($user->language == $sender->language && $user->preferred_language == $receiver->language) || 
-				($user->language == $receiver->language && $user->preferred_language == $sender->language)) {
-
-				$tFeedsVerified = $this->Mdl_TFeeds->getAllEx(["feed" => $feed->id, "verified" => 1]);
-				$feed->tFeeds = [];
-
-				if (count($tFeedsVerified)) {
-					$feed->tFeeds = $tFeedsVerified;
-					$feed->verified = true;
-
-					foreach ($feed->tFeeds as $key => $tFeed) {
-						$user = $this->Mdl_Users->getFirst('id', $tFeed->author);
-
-						unset($user->password);
-
-						$tFeed->author = $user;
-					}
-				}
-				else {
-					$tFeeds = $this->Mdl_TFeeds->getAll("feed", $feed->id);
-
-					if (count($tFeeds)) {
-						foreach ($tFeeds as $key => $tFeed) {
-							$user = $this->Mdl_Users->getFirst('id', $tFeed->author);
-
-							unset($user->password);
-
-							$tFeed->author = $user;
-						}
-
-						$feed->tFeeds = $tFeeds;
-					}
-
-					
-					$feed->tFeedsCnt = count($tFeeds);
-				}
-
-				$feed->sender = $this->Mdl_Users->getFirst('id', $feed->sender);
-				$feed->receiver = $this->Mdl_Users->getFirst('id', $feed->receiver);
-
-				$filteredFeeds[] = $feed;
+			foreach ($feed->tfeeds as $tfeed) {
+				$tfeed->draftFeeds = $this->Mdl_Feeds->getAllFromTable('draft_feeds', 'tfeed = ' . $tfeed->id);;
 			}
 		}
 
 
 		parent::returnWithoutErr("Request has been listed successfully.", array(
-			'cnt' => count($filteredFeeds),
-			'feeds' => $filteredFeeds
+			'cnt' => count($feeds),
+			'feeds' => $feeds
 		));
 	}
 
@@ -165,7 +115,7 @@ class Api_Feeds extends Api_Unit {
 	_________________________________________________________________________________________________________*/
 
 	public function api_entry_create() {
-		parent::validateParams(array("qbmsgid", "qbdlgid", "sender", "receiver", "content"));
+		parent::validateParams(array("qbmsgid", "qbdlgid", 'language', 'sender', 'receivers', 'content'), true);
 
 		if (!$_POST["qbmsgid"])
 			parent::returnWithErr("qbmsgid is not valid.");
@@ -173,7 +123,12 @@ class Api_Feeds extends Api_Unit {
 		if (!$_POST["qbdlgid"])
 			parent::returnWithErr("qbdlgid is not valid.");
 
-		$feed = $this->Mdl_Feeds->create(utfn_safeArray(array('qbmsgid', 'qbdlgid', 'sender', 'receiver','content', 'title', 'category'), $_POST));
+		$arrReceivers = explode(',', $_POST['receivers']);
+
+		if ($arrReceivers[0] == null)
+			parent::returnWithErr("Receivers are missing.");
+
+		$feed = $this->Mdl_Feeds->create(utfn_safeArray(array('qbmsgid', 'qbdlgid', 'sender', 'language', 'receivers', 'content', 'title', 'category'), $_POST), $arrReceivers);
 
 		if ($feed == null)	parent::returnWithErr($this->Mdl_Feeds->latestErr);
 
@@ -190,54 +145,107 @@ class Api_Feeds extends Api_Unit {
 	_________________________________________________________________________________________________________*/
 
 	public function api_entry_translate() {
-		parent::validateParams(array("author", "feed", "content", "verified"));
+		parent::validateParams(array('author', 'tfeed', 'language', 'content'));
 
 		$this->load->model('Mdl_Users');
 		$this->load->model('Mdl_Feeds');
 		$this->load->model('Mdl_TFeeds');
 
-		if ($_POST["verified"] != 1 && $_POST["verified"] != 0) {
-			parent::returnWithErr('Verified field should be 0 or 1');
-		}
 
 		$author = $this->Mdl_Users->getFirst('id', $_POST['author']);
 
 		if ($author == null) {
-			parent::returnWithErr('author is not valid.');
+			parent::returnWithErr('Author is not valid.');
 		}
 
-		$verifiedTFeed = $_POST["verified_tfeed"];
+		$tfeed = $this->Mdl_Feeds->getEx($_POST['tfeed'], 'tfeeds');
 
-		if ($author->role == "User") {
-			if ($_POST["verified"] == 1 || $verifiedTFeed)
-				parent::returnWithErr('author have not permission to verify.');
+		if ($tfeed == null) {
+			parent::returnWithErr('tFeed is not valid.');
 		}
 
-		if ($verifiedTFeed) {
+		/*
+			This traslatedFeed has been already translated to English. so this request will be ignored.
+		*/
+		$language = strtolower($_POST['language']);
 
-			$tFeed = $this->Mdl_TFeeds->get($verifiedTFeed);
-
-			if ($tFeed == null)
-				parent::returnWithErr('verifiedTFeed is not valid.');
-
-			$this->Mdl_TFeeds->updateEx($verifiedTFeed, ['verified' => 1]);
-
-			
-
-			parent::returnWithoutErr("Translation has been done successfully.", $tFeed);
+		if ($tfeed->eng_content != null && $language == 'english') {
+			parent::returnWithErr('This feed has been translated and verified to English. your translation has been rejected.');
 		}
 
-		$this->load->model("Mdl_TFeeds");
+		/*
+			This feed has been translated and verified to target language.
+		*/
+		if ($tfeed->trans_content != null && $language == strtolower($tfeed->target_language) ) {
+			parent::returnWithErr("This feed has been translated and verified to " . $tfeed->target_language . ". your translation has been rejected.");
+		}
 
-		$tFeed = $this->Mdl_TFeeds->create(utfn_safeArray(array('author', 'verified', 'feed', 'content', 'title', 'category'), $_POST));
+		if ($language != strtolower($tfeed->target_language) && $language != 'english') {
+			parent::returnWithErr('Wrong language for this feed.');
+		}
 
-		if ($tFeed == null)	parent::returnWithErr($this->Mdl_TFeeds->latestErr);
+
+		$draftFeed = $this->Mdl_Feeds->createDraftFeed($_POST);
 
 		/*
 			Created successfully .... 
 		*/
-		parent::returnWithoutErr("Translation has been done successfully.", $tFeed);
+		parent::returnWithoutErr("Translation has been saved draftly.", $draftFeed);
+	}
 
+	public function api_entry_verify() {
+		parent::validateParams(array('verifier', 'draftFeed'));
+
+		$this->load->model('Mdl_Users');
+
+		/*
+		if ($_POST["verified"] != 1 && $_POST["verified"] != 0) {
+			parent::returnWithErr('Verified field should be 0 or 1');
+		}
+		*/
+
+		$verifier = $this->Mdl_Users->getFirst('id', $_POST['verifier']);
+
+		if ($verifier->role == "User") {
+			parent::returnWithErr("User doesn't have permission to verify feed translation.");
+		}
+
+		$draftFeed = $this->Mdl_Feeds->getEx($_POST['draftFeed'], 'draft_feeds');
+
+		if ($draftFeed == null) {
+			parent::returnWithErr('Draft feed id is not valid.');
+		}
+
+		$tfeed = $this->Mdl_Feeds->getEx($draftFeed->tfeed, 'tfeeds');
+
+		/*
+			If the draft feed is english then we will set this content as tfeed's eng_content.
+		*/
+		if (strtolower($draftFeed->language) == 'english') {
+			if ($tfeed->eng_content != null) {
+				parent::returnWithErr("This feed already has been verified. Verification request has been rejected.");
+			}
+
+			$this->Mdl_Feeds->updateWithTable($draftFeed->tfeed, ['eng_content' => $draftFeed->content], 'tfeeds');
+		}
+		else if (strtolower($draftFeed->language) == strtolower($tfeed->target_language)) {
+			if ($tfeed->trans_content != null) {
+				parent::returnWithErr("This feed already has been verified. Verification request has been rejected.");
+			}
+
+			if ($tfeed->eng_content == null) {
+				parent::returnWithErr("This feed isn't translated to English yet. How did you translate this feed?");
+			}
+
+			$this->Mdl_Feeds->updateWithTable($draftFeed->tfeed, ['trans_content' => $draftFeed->content], 'tfeeds');
+		}
+		else {
+			parent::returnWithErr("This draft feed doesn't match with original feed. How did you translate this feed?");
+		}
+
+		$this->Mdl_Feeds->updateWithTable($draftFeed->id, ['verified' => 1], 'draft_feeds');
+
+		parent::returnWithoutErr("Translation has been verified successfully.", null);
 	}
 }
 
