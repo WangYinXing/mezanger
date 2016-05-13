@@ -643,7 +643,7 @@ class Api_User extends Api_Unit {
     parent::returnWithoutErr("User profile fetched successfully.", $user);
   }
 
-  public function api_entry_getUserIDsFromQBIDs() {
+  public function api_entry_getUserFromQBIDs() {
     parent::validateParams(array('users'));
 
     $users = explode(',', $_POST['users']);
@@ -659,7 +659,7 @@ class Api_User extends Api_Unit {
         $userID = '';
 
         if ($user[0] != null) {
-            $userID = $user[0]->id;
+            $userID = $user[0];
         }
 
         $arrQBIDs[] = ['userid' => $userID, 'qbid' => $qbid];
