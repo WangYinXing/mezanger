@@ -643,6 +643,31 @@ class Api_User extends Api_Unit {
     parent::returnWithoutErr("User profile fetched successfully.", $user);
   }
 
+  public function api_entry_getUserIDsFromQBIDs() {
+    parent::validateParams(array('users'));
+
+    $users = explode(',', $_POST['users']);
+
+    if ($users[0] == null)
+        parent::returnWithErr("Users are missing.");
+
+    $arrQBIDs = [];
+
+    foreach ($users as $qbid) {
+        $user = $this->Mdl_Users->getAll('qbid', $qbid);
+
+        $userID = '';
+
+        if ($user[0] != null) {
+            $userID = $user[0]->id;
+        }
+
+        $arrQBIDs[] = ['userid' => $userID, 'qbid' => $qbid];
+    }
+
+    parent::returnWithoutErr("Successfully fetched.", $arrQBIDs);
+  }
+
   /*--------------------------------------------------------------------------------------------------------
     Set profile ..
   _________________________________________________________________________________________________________*/
