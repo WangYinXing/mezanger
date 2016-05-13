@@ -26,6 +26,15 @@ class Mdl_Campus extends CI_Model {
 		return null;
 	}
 
+	public function getFirst($field = "", $val = "") {
+	  $users = $this->getAll($field, $val);
+
+	  if (count($users) == 0)
+	      return null;
+
+	  return $users[0];
+	}
+
 	public function getAll($field = "", $val = "") {
 		$this->db->select("*");
 		$this->db->from($this->table);
