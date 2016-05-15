@@ -60,7 +60,7 @@ class Api_Feeds extends Api_Unit {
 
 		parent::returnWithoutErr("Request has been listed successfully.", array(
 			'cnt' => count($filteredFeeds),
-			'feeds' => $feeds
+			'feeds' => $filteredFeeds
 		));
 	}
 
