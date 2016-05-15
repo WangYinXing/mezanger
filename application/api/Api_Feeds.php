@@ -40,12 +40,14 @@ class Api_Feeds extends Api_Unit {
 
 		foreach ($feeds as $feed) {
 			$feed->tfeeds = $this->Mdl_Feeds->getAllFromTable('tfeeds', 'feed = ' . $feed->id);
+			$valid = true;
 
 			foreach ($feed->tfeeds as $key => $tfeed) {
 				if ($user != null) {
 					if ($tfeed->language != $user->language && $tfeed->target_language != $user->language) {
 						
 						unset($feed->tfeeds[$key]);
+						$valid = false;
 
 						continue;
 					}
@@ -53,8 +55,9 @@ class Api_Feeds extends Api_Unit {
 
 				$tfeed->draftFeeds = $this->Mdl_Feeds->getAllFromTable('draft_feeds', 'tfeed = ' . $tfeed->id);;
 			}
-
-			$filteredFeeds[] = $feed;
+			
+			if ($valid)
+				$filteredFeeds[] = $feed;
 		}
 
 
