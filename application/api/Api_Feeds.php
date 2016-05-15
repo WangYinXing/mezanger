@@ -36,18 +36,15 @@ class Api_Feeds extends Api_Unit {
 			$user = $this->Mdl_Users->getFirst('id', $_POST['user']);
 
 		$feeds = $this->Mdl_Feeds->getLatest($_POST['duration']);
-		$filteredFeeds = [];
-
+		
 		foreach ($feeds as $feed) {
 			$feed->tfeeds = $this->Mdl_Feeds->getAllFromTable('tfeeds', 'feed = ' . $feed->id);
-			$valid = true;
 
 			foreach ($feed->tfeeds as $key => $tfeed) {
 				if ($user != null) {
 					if ($tfeed->language != $user->language && $tfeed->target_language != $user->language) {
 						
 						unset($feed->tfeeds[$key]);
-						$valid = false;
 
 						continue;
 					}
@@ -55,9 +52,13 @@ class Api_Feeds extends Api_Unit {
 
 				$tfeed->draftFeeds = $this->Mdl_Feeds->getAllFromTable('draft_feeds', 'tfeed = ' . $tfeed->id);;
 			}
-			
-			if ($valid)
-				$filteredFeeds[] = $feed;
+		}
+
+		$filteredFeeds = [];
+
+		foreach($feeds as $feed) {
+			if ($feed->tfeeds != null || count($feed->tfeeds) != 0)
+				array_push($filteredFeeds, $feed);
 		}
 
 
