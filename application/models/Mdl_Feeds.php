@@ -45,11 +45,13 @@ Class Mdl_Feeds extends Mdl_Campus {
 
 		/*
 			If sender sent message as English...
-		*/
+		
 		if (strtolower($feed['language']) == "english") {
 			$engContent = $feed['content'];
 		}
+		*/
 
+		
 		$this->db->insert($this->table, $feed);
 		$feedID = $this->db->insert_id();
 
@@ -77,7 +79,7 @@ Class Mdl_Feeds extends Mdl_Campus {
 					'feed' => $feedID,
 					'language' => $feed['language'],
 					'target_language' => $language,
-					'eng_content' => $engContent
+					//'eng_content' => $engContent
 				]);
 			$tfeedID = $this->db->insert_id();
 		}
@@ -92,6 +94,10 @@ Class Mdl_Feeds extends Mdl_Campus {
 		$draftFeed['id'] = $this->db->insert_id();
 
 		return $draftFeed;
+	}
+
+	public function updateEngContent($feedID, $engContent) {
+		
 	}
 
 	public function getEx($id, $type) {

@@ -27,6 +27,7 @@ class Mdl_Campus extends CI_Model {
 	}
 
 	public function getFirst($field = "", $val = "") {
+
 	  $users = $this->getAll($field, $val);
 
 	  if (count($users) == 0)
@@ -138,6 +139,13 @@ class Mdl_Campus extends CI_Model {
 	public function updateWithTable($id, $arrValues, $table) {
 		$this->db->from($table);
 		$this->db->where("id", $id);
+
+		$this->db->update($table, $arrValues);
+	}
+
+	public function updateWithTableEx($condition, $arrValues, $table) {
+		$this->db->from($table);
+		$this->db->where($condition);
 
 		$this->db->update($table, $arrValues);
 	}
