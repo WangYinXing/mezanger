@@ -51,6 +51,12 @@ class Api_Feeds extends Api_Unit {
 				}
 
 				$tfeed->draftFeeds = $this->Mdl_Feeds->getAllFromTable('draft_feeds', 'tfeed = ' . $tfeed->id);;
+
+				if ($tfeed->draftFeeds != null && count($tfeed->draftFeeds)) {
+					foreach ($tfeed->draftFeeds as $dfeed) {
+						$dfeed->author = $this->Mdl_Users->get($dfeed->author);
+					}
+				}
 			}
 		}
 
@@ -89,9 +95,7 @@ class Api_Feeds extends Api_Unit {
 			$feed->tfeeds = $this->Mdl_Feeds->getAllFromTable('tfeeds', 'feed = ' . $feed->id);
 
 			foreach ($feed->tfeeds as $key => $tfeed) {
-				//$tfeed->draftFeeds = $this->Mdl_Feeds->getAllFromTable('draft_feeds', 'tfeed = ' . $tfeed->id);
-
-
+				$tfeed->draftFeeds = $this->Mdl_Feeds->getAllFromTable('draft_feeds', 'tfeed = ' . $tfeed->id);
 
 				if ($tfeed->draftFeeds != null && count($tfeed->draftFeeds)) {
 					foreach ($tfeed->draftFeeds as $dfeed) {
