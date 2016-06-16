@@ -54,7 +54,7 @@ function mh_sendViaMailgun($bcc, $subject, $html) {
 	    curl_setopt($ch, CURLOPT_URL, 
 	          'https://api.mailgun.net/v3/sandboxa8b6f44a159048db93fd39fc8acbd3fa.mailgun.org/messages');
 	    curl_setopt($ch, CURLOPT_POSTFIELDS, 
-	            array('from' => 'noreply@coatingsestimator.com',
+	            array('from' => 'noreply@mezanger.com',
 	                  'to' => $email . ' <' . $email . '>',
 	                  'subject' => $subject,
 	                  'html' => $html));
