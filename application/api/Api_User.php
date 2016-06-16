@@ -151,7 +151,7 @@ class Api_User extends Api_Unit {
         
         $email = mh_loadVerificationEmailTemplate($this, $newUser);     
                   
-        mh_send([$newUser["username"]], "Please verify your account.", $email);
+        mh_sendViaMailgun([$newUser["email"]], "Please verify your account.", $email);
         //mh_send(["wangyinxing19@gmail.com"], "Please verify your account.", $email);
         
         /*

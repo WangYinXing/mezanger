@@ -68,43 +68,25 @@ class Users extends Api_User {
 	
 
 	public function verify() {
-
 		$data['error'] = "";
 
-
-
 		if (!isset($_GET["token"])) {
-
 			$data['content'] = "Sorry. Your token has been expired or invalid.";
-
 			$this->load->view('vw_error', $data);
-
 			return;
-
 		}
-
 
 
 		$data['token'] = $token = $_GET["token"];
 
-
-
 		$this->load->model("Mdl_Tokens");
-
-
 
 		$tokenRecords = $this->Mdl_Tokens->getAll("token", $token);
 
-
-
 		if (count($tokenRecords) == 0) {
-
 			$data['content'] = "Sorry. Your token is illegal.";
-
 			$this->load->view('vw_error', $data);
-
 			return;
-
 		}
 
 
