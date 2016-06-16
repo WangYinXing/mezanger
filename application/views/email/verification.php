@@ -2,13 +2,13 @@
 <style type="text/css">
 @font-face {
     font-family: menu-font;
-    src: url('<?= $base_url ?>assets/dist/css/fonts/EncodeSansCompressed-SemiBold.ttf');
+    src: url('http://52.38.26.177/mezanger/assets/dist/css/fonts/EncodeSansCompressed-SemiBold.ttf');
 }
 </style>
 <body style='font-family: Helvetica,sans-serif'>
 	<div style=''>
 		<div style="padding:1em 0em;text-align:center;background: #231B16;">
-			<img style='height:100px; display:inline-block;vertical-align: middle;' src='<?= $base_url ?>/assets/ce-logo.png' />
+			<!--<img style='height:100px; display:inline-block;vertical-align: middle;' src='<?= $base_url ?>/assets/ce-logo.png' />-->
 			<h2 style='margin:0em 2em;display:inline-block;vertical-align: middle;color:white'>Thanks for using Mezanger.</h2>
 		</div>
 		<div style='background:#E4D4CA;padding:2em;'>
