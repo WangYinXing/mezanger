@@ -169,11 +169,11 @@ Class Mdl_Users extends Mdl_Campus {
 		return $user;
 	}
 
-	public function changePassword($user, $oldPassword, $newPassword) {
+	public function changePassword($id, $oldPassword, $newPassword) {
 		$this->db->select("*");
 		$this->db->from($this->table);
 
-		$this->db->where("id", $user);
+		$this->db->where("id", $id);
 
 		$users = $this->db->get()->result();
 
@@ -185,8 +185,8 @@ Class Mdl_Users extends Mdl_Campus {
 		if (md5($oldPassword) !=  $user->password) {
 			return 2;
 		}
-		
-		$this->db->where("id", $user);
+
+		$this->db->where("id", $id);
 
 
 		if (!$this->db->update($this->table, array('password'=> md5($newPassword)))) {
