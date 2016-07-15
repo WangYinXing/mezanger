@@ -177,6 +177,8 @@ Class Mdl_Users extends Mdl_Campus {
 
 		$users = $this->db->get()->result();
 
+		print_r($users);
+
 		if (count($users) == 0)
 			return null;
 
@@ -194,8 +196,6 @@ Class Mdl_Users extends Mdl_Campus {
 	    }
 
 	    $newPassword = implode($pass); //turn the array into a string
-
-	    print_r($newPassword);
 
 	    $this->db->select("*");
 		$this->db->from($this->table);
