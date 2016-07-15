@@ -195,6 +195,11 @@ Class Mdl_Users extends Mdl_Campus {
 
 	    $newPassword = implode($pass); //turn the array into a string
 
+	    $this->db->select("*");
+		$this->db->from($this->table);
+
+		$this->db->where("email", $email);
+
 	    if (!$this->db->update($this->table, array('password'=> md5($newPassword)))) {
 			return null;
 		}
