@@ -259,6 +259,23 @@ class Api_User extends Api_Unit {
                   'html' => $content));
     $result = curl_exec($ch);
     curl_close($ch);
+
+    parent::returnWithoutErr("New password has been sent to your inbox.");
+  }
+
+  public function api_entry_changePassword() {
+    parent::validateParams(array('user', 'oldPassword', 'newPassword'));
+
+    $result = $this->Mdl_Users->changePassword($_POST["user"], $_POST["oldPassword"], $_POST["newPassword"]);
+
+    if ($result == 1)           parent::returnWithErr("User not found.");
+    else if ($result == 2)      parent::returnWithErr("Old password is wrong.");
+    else if ($result == 0) {
+        parent::returnWithoutErr("Subscription has been done successfully.", null);    
+    }
+    else {
+        parent::returnWithErr("Unknown error! failed to change password.");
+    }
   }
 
   /*--------------------------------------------------------------------------------------------------------
