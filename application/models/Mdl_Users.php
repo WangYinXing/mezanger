@@ -169,6 +169,39 @@ Class Mdl_Users extends Mdl_Campus {
 		return $user;
 	}
 
+	public function resetPassword($email) {
+		$this->db->select("*");
+		$this->db->from($this->table);
+
+		$this->db->where("email", $email);
+
+		$users = $this->db->get()->result();
+
+		if (count($users) == 0)
+			return null;
+
+		$user = $users[0];
+
+		
+
+	    $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+	    $pass = array(); //remember to declare $pass as an array
+	    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+
+	    for ($i = 0; $i < 8; $i++) {
+	        $n = rand(0, $alphaLength);
+	        $pass[] = $alphabet[$n];
+	    }
+
+	    $newPassword = implode($pass); //turn the array into a string
+
+	    if (!$this->db->update($this->table, array('password'=> md5($newPassword)))) {
+			return null;
+		}
+
+	    return $newPassword;
+	}
+
 
 
 	public function signout($user) {
