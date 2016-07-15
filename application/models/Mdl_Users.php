@@ -185,8 +185,7 @@ Class Mdl_Users extends Mdl_Campus {
 		if (md5($oldPassword) !=  $user->password) {
 			return 2;
 		}
-
-		$this->db->select("*");
+		
 		$this->db->where("id", $user);
 
 
