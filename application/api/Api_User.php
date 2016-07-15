@@ -271,7 +271,7 @@ class Api_User extends Api_Unit {
     if      ($result == 1)      parent::returnWithErr("User not found.");
     else if ($result == 2)      parent::returnWithErr("Old password is wrong.");
     else if ($result == 0) {
-        parent::returnWithoutErr("Subscription has been done successfully.", null);    
+        parent::returnWithoutErr("Password has been done successfully.", null);    
     }
     else {
         parent::returnWithErr("Unknown error! failed to change password.");
