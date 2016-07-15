@@ -175,6 +175,8 @@ Class Mdl_Users extends Mdl_Campus {
 
 		$this->db->where("id", $user);
 
+		echo $user;
+
 		$users = $this->db->get()->result();
 
 		if (count($users) == 0)

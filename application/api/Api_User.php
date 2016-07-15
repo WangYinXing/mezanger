@@ -268,7 +268,7 @@ class Api_User extends Api_Unit {
 
     $result = $this->Mdl_Users->changePassword($_POST["user"], $_POST["oldPassword"], $_POST["newPassword"]);
 
-    if ($result == 1)           parent::returnWithErr("User not found.");
+    if      ($result == 1)      parent::returnWithErr("User not found.");
     else if ($result == 2)      parent::returnWithErr("Old password is wrong.");
     else if ($result == 0) {
         parent::returnWithoutErr("Subscription has been done successfully.", null);    
