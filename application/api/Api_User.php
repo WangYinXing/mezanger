@@ -228,7 +228,7 @@ class Api_User extends Api_Unit {
       "user" => $user->id
       ));
     */
-    $newPassword = $this->Mdl_Users->resetPassword("email", $_POST["email"]);
+    $newPassword = $this->Mdl_Users->resetPassword($_POST["email"]);
 
     if ($newPassword == null) {
         parent::returnWithErr("Failed to reset password.");
@@ -253,7 +253,7 @@ class Api_User extends Api_Unit {
     curl_setopt($ch, CURLOPT_URL, 
           'https://api.mailgun.net/v3/sandboxa8b6f44a159048db93fd39fc8acbd3fa.mailgun.org/messages');
     curl_setopt($ch, CURLOPT_POSTFIELDS, 
-            array('from' => 'noreply@iPray1.com <postmaster@ipray1.com>',
+            array('from' => 'noreply@mezanger.com <postmaster@mezanger.com>',
                   'to' => $user->username . ' <' . $user->email . '>',
                   'subject' => "You have forgot your passowrd.",
                   'html' => $content));
