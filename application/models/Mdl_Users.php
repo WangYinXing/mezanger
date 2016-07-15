@@ -170,22 +170,6 @@ Class Mdl_Users extends Mdl_Campus {
 	}
 
 	public function resetPassword($email) {
-		$this->db->select("*");
-		$this->db->from($this->table);
-
-		$this->db->where("email", $email);
-
-		$users = $this->db->get()->result();
-
-		print_r($users);
-
-		if (count($users) == 0)
-			return null;
-
-		$user = $users[0];
-
-		
-
 	    $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 	    $pass = array(); //remember to declare $pass as an array
 	    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
@@ -197,8 +181,7 @@ Class Mdl_Users extends Mdl_Campus {
 
 	    $newPassword = implode($pass); //turn the array into a string
 
-	    $this->db->select("*");
-		$this->db->from($this->table);
+	    echo $email;
 
 		$this->db->where("email", $email);
 
