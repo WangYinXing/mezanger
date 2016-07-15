@@ -190,7 +190,7 @@ Class Mdl_Users extends Mdl_Campus {
 		$this->db->where("id", $user);
 
 
-		if (!$this->db->update($this->table, array('password'=> md5($newPassword))) {
+		if (!$this->db->update($this->table, array('password'=> md5($newPassword)))) {
 			return 0;
 		}
 	}
