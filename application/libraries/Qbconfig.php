@@ -22,7 +22,9 @@ define('QB_DEFAULT_PASSWORD', "Nithiya2405");
 
 
 // GCM API KEY
-define( 'GCM_API_KEY', 'AIzaSyC-0p36zcqLhkqxgGl6SceEsCRJnpXsOEQ' );
+//define( 'GCM_API_KEY', 'AIzaSyC-0p36zcqLhkqxgGl6SceEsCRJnpXsOEQ' );
+define( 'GCM_API_KEY', 'AIzaSyCz6Vlg6kwx0UGfEdcY2Moelc6ADC2O8WI' );
+
 
 
 class Qbconfig {
